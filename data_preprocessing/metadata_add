@@ -1,0 +1,259 @@
+!pip install openai
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+import pandas as pd
+
+path = '/content/drive/MyDrive/Colab Notebooks/RAG/Data/eval_meta_added.csv'
+df = pd.read_csv(path)
+
+# df = df.drop(['Type'], axis=1)
+# df
+
+# Dropping last n rows using drop
+# df.drop(df.tail(1).index,inplace = True)
+df
+
+import openai
+from openai import AzureOpenAI
+
+# Set up your Azure OpenAI credentials
+AZURE_OPENAI_ENDPOINT = "https://benchchat.openai.azure.com/"
+AZURE_OPENAI_API_KEY = "28b301cb28c347ca8714129af7dc9416"
+
+client = AzureOpenAI(
+  azure_endpoint = AZURE_OPENAI_ENDPOINT,
+  api_key=AZURE_OPENAI_API_KEY,
+  api_version="2024-02-01"
+)
+
+# Topic identification
+def is_related_to_adhd(question):
+    # Construct the messages for the chat completion
+    messages = [
+    {"role": "system", "content": "You are an expert in ADHD-related diseases."},
+    {"role": "user", "content": f"""Analyze the following question and determine the key topic it addresses. Provide your answer with the topic name only and in one word.\n\nQuestion: \"{question}\"\n\nTopic:"""}
+]
+
+
+    response = client.chat.completions.create(
+        model="benchChat",  # Use the appropriate model name
+        messages=messages,  # Pass the messages instead of prompt
+        max_tokens=5,
+        temperature=0  # Lower temperature for deterministic output
+    )
+
+    answer = response.choices[0].message.content.strip() # Extract the answer from the message content
+    return answer
+
+
+# Example usage
+questions = df['Question']
+
+results = {question: is_related_to_adhd(question) for question in questions}
+
+for question, answer in results.items():
+    print(f"Question: {question}\nAnswer: {answer}\n")
+
+l = []
+for i, j in results.items():
+    l.append(j)
+
+# df['Workplace_related'] = l
+# df.to_csv('/content/drive/MyDrive/Colab Notebooks/RAG/Data/eval_meta_added.csv', index=False)
+
+#added to csv
+
+import openai
+from openai import AzureOpenAI
+
+# Set up your Azure OpenAI credentials
+AZURE_OPENAI_ENDPOINT = "https://benchchat.openai.azure.com/"
+AZURE_OPENAI_API_KEY = "28b301cb28c347ca8714129af7dc9416"
+
+client = AzureOpenAI(
+  azure_endpoint = AZURE_OPENAI_ENDPOINT,
+  api_key=AZURE_OPENAI_API_KEY,
+  api_version="2024-02-01"
+)
+
+# Define the function to check if a question is related to ADHD workplace difficulties
+def is_related_to_adhd(question):
+    # Construct the messages for the chat completion
+    messages = [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": f"""Analyze the following question and determine if it is related to work-related topics only.
+
+    Provide your answer in one word as 'Yes' or 'No' only.
+
+    Question: \"{question}\"
+
+    Answer:"""}
+  ]
+
+
+    response = client.chat.completions.create(
+        model="benchChat",  # Use the appropriate model name
+        messages=messages,  # Pass the messages instead of prompt
+        max_tokens=5,
+        temperature=0  # Lower temperature for deterministic output
+    )
+
+    answer = response.choices[0].message.content.strip() # Extract the answer from the message content
+    return answer
+
+
+# Example usage
+questions = df['Question']
+
+results = {question: is_related_to_adhd(question) for question in questions}
+
+for question, answer in results.items():
+    print(f"Question: {question}\nAnswer: {answer}\n")
+
+l = []
+for i, j in results.items():
+    l.append(j)
+
+df['Workplace_related'] = l
+df.to_csv('/content/drive/MyDrive/Colab Notebooks/RAG/Data/eval_meta_added.csv', index=False)
+
+#added to csv
+
+import openai
+from openai import AzureOpenAI
+
+# Set up your Azure OpenAI credentials
+AZURE_OPENAI_ENDPOINT = "https://benchchat.openai.azure.com/"
+AZURE_OPENAI_API_KEY = "28b301cb28c347ca8714129af7dc9416"
+
+client = AzureOpenAI(
+  azure_endpoint = AZURE_OPENAI_ENDPOINT,
+  api_key=AZURE_OPENAI_API_KEY,
+  api_version="2024-02-01"
+)
+
+# Topic identification
+def is_related_to_adhd(question):
+    # Construct the messages for the chat completion
+    messages = [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": f"""Analyze the following question and identify the main topic it addresses. Provide your answer with a keyword or phrase in 4 words or less.\n\nQuestion: \"{question}\"\n\nAnswer:"""}
+    ]
+
+
+    response = client.chat.completions.create(
+        model="benchChat",  # Use the appropriate model name
+        messages=messages,  # Pass the messages instead of prompt
+        max_tokens=5,
+        temperature=0  # Lower temperature for deterministic output
+    )
+
+    answer = response.choices[0].message.content.strip() # Extract the answer from the message content
+    return answer
+
+
+# Example usage
+questions = df['Question']
+
+results = {question: is_related_to_adhd(question) for question in questions}
+
+for question, answer in results.items():
+    print(f"Question: {question}\nAnswer: {answer}\n")
+
+l = []
+for i, j in results.items():
+    l.append(j)
+
+df['Topic_discussed'] = l
+df.to_csv('/content/drive/MyDrive/Colab Notebooks/RAG/Data/eval_meta_added.csv', index=False)
+
+import os
+from openai import AzureOpenAI
+
+AZURE_OPENAI_ENDPOINT = "https://benchchat.openai.azure.com/"
+AZURE_OPENAI_API_KEY = "28b301cb28c347ca8714129af7dc9416"
+
+client = AzureOpenAI(
+  azure_endpoint = AZURE_OPENAI_ENDPOINT,
+  api_key=AZURE_OPENAI_API_KEY,
+  api_version="2024-02-01"
+)
+
+topics = (df['Topic_discussed'].astype(str).tolist())
+unique_topics = list(set(topics))
+chunk_size = 512
+
+responses = []
+
+
+for i in range(0, len(unique_topics), chunk_size):
+    chunk = unique_topics[i:i + chunk_size]
+    question = """Here is the list of all ADHD topics I have collected from a community website reported by users.
+    I want you to remove duplicated symptoms and responses not related to ADHD and prepare a clean and concise list of the common topics.
+    """ + ", ".join(chunk)
+
+
+    response = client.chat.completions.create(
+        model="benchChat",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant and expert in Neurodiverse diseases."},
+            {"role": "user", "content": question},
+
+    ]
+)
+responses.append(response.choices[0].message.content)
+responses_str =  "\n".join(responses)
+
+with open("/content/drive/MyDrive/Colab Notebooks/RAG/Data/topics.csv","w")as file:
+  file_content = file.write(responses_str)
+  print(responses_str)
+
+import openai
+from openai import AzureOpenAI
+
+# Set up your Azure OpenAI credentials
+AZURE_OPENAI_ENDPOINT = "https://benchchat.openai.azure.com/"
+AZURE_OPENAI_API_KEY = "28b301cb28c347ca8714129af7dc9416"
+
+client = AzureOpenAI(
+  azure_endpoint = AZURE_OPENAI_ENDPOINT,
+  api_key=AZURE_OPENAI_API_KEY,
+  api_version="2024-02-01"
+)
+
+# Topic identification
+def is_related_to_adhd(question):
+    # Construct the messages for the chat completion
+    messages = [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": f"""Classify the following keyword or phrase under one of these topics: ADHD diagnosis, ADHD medication (including tolerance, side effects, and success stories), ADHD comorbid conditions (including anxiety and autism), ADHD management strategies (including exercise, diet, and mindfulness), ADHD and parenting, ADHD and relationships, ADHD and work (including workplace accommodations and bullying), ADHD and school (including teacher support, IEPs/504s, and school performance), ADHD and social interactions, ADHD disclosure at work, Famous people with ADHD. Answer in 2 words max.\n\nKeyword or phrase: \"{question}\"\n\nClassified as:"""}
+    ]
+
+
+    response = client.chat.completions.create(
+        model="benchChat",  # Use the appropriate model name
+        messages=messages,  # Pass the messages instead of prompt
+        max_tokens=5,
+        temperature=0  # Lower temperature for deterministic output
+    )
+
+    answer = response.choices[0].message.content.strip() # Extract the answer from the message content
+    return answer
+
+
+# Example usage
+questions = df['Question']
+
+results = {question: is_related_to_adhd(question) for question in questions}
+
+for question, answer in results.items():
+    print(f"Question: {question}\nAnswer: {answer}\n")
+
+l = []
+for i, j in results.items():
+    l.append(j)
+
+df['Topic'] = l
+df.to_csv('/content/drive/MyDrive/Colab Notebooks/RAG/Data/eval_meta_added.csv', index=False)
