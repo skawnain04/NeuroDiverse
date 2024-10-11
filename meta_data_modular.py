@@ -15,7 +15,7 @@ client = AzureOpenAI(
   api_version="2024-02-01"
 )
 
-path = 'Data/merged_comments.csv'
+path = 'Data/all_posts.csv'
 df_org = pd.read_csv(path)
 print(df_org.count())
 
@@ -310,30 +310,256 @@ def medicine_related_content(question):
         # Return 'Unknown' or handle the error in another way
         return "Problematic"
 
+# Discrimination detection
+def discrimination(question):
+    # Construct the messages for the chat completion
+    messages = [
+    {"role": "system", "content": """You are an AI assistant specialized in analyzing text for discriminatory content related to neurodiverse disabilities and mental health conditions. Your task is to determine if a given text contains any form of discrimination specifically targeting individuals with neurodiverse or mental health conditions, which may include but is not limited to:
+
+      1. Discrimination based on neurodiverse conditions such as autism spectrum disorders (ASD), ADHD, dyslexia, dysgraphia, or Tourette syndrome
+      2. Discrimination based on mental health conditions such as:
+          - Bipolar disorder
+          - Anxiety disorders
+          - Borderline personality disorder (BPD)
+          - Depression
+          - Obsessive-compulsive disorder (OCD)
+          - Post-traumatic stress disorder (PTSD)
+          - Schizophrenia or other psychotic disorders
+      3. Any form of biased treatment, exclusion, derogatory statements, or negative assumptions aimed at individuals based on their neurodiverse or mental health conditions
+      4. Stereotyping, belittling, or making harmful assumptions about someone's abilities, intelligence, behavior, or worth based on these conditions
+
+      Discrimination may include unfair treatment, derogatory comments, exclusion, stereotyping, or assumptions about capability or character due to neurodiversity or mental health conditions.
+
+      Respond with 'Yes' if the content contains any form of discrimination based on neurodiverse disabilities or mental health conditions, and 'No' if it does not."""},
+
+          {"role": "user", "content": f"""Analyze the following text and determine if it contains any form of discrimination based on neurodiverse disabilities or mental health conditions as described above.
+
+      Text: "{question}"
+
+      Provide your answer in one word only:"""}
+      ]
+
+
+
+    try:
+        response = client.chat.completions.create(
+            model="benchChat",  # Use the appropriate model name
+            messages=messages,  # Pass the messages instead of prompt
+            max_tokens=5,
+            temperature=0  # Lower temperature for deterministic output
+        )
+
+        # Check if response and content exist before accessing
+        if response and response.choices[0].message and response.choices[0].message.content:
+            answer = response.choices[0].message.content.strip() # Extract the answer from the message content
+            return answer
+        else:
+          print(f"Empty response for question: {question}")
+          return "None"
+
+        answer = response.choices[0].message.content.strip()  # Extract the answer from the message content
+        return answer
+
+    except openai.BadRequestError as e:
+        # Print the error message and the problematic question
+        print(f"Error: {e}")
+        print(f"Problematic question: {question}")
+        # Return 'Unknown' or handle the error in another way
+        return "Problematic"
+    
+# personal relational challenges detection
+def relational_challenges(question):
+    # Construct the messages for the chat completion
+    messages = [
+    {"role": "system", "content": """You are an AI assistant specialized in analyzing text for personal relationship challenges specifically related to neurological diseases (Bipolar disorder, Anxiety disorders, Borderline personality disorder (BPD), Depression, Obsessive-compulsive disorder (OCD), Post-traumatic stress disorder (PTSD), ADHD, Autism spectrum disorders, Schizophrenia or other psychotic disorders). Your task is to determine if the given text discusses or implies any form of relationship difficulties directly caused by these neurological conditions
+
+      
+
+      Focus on identifying relationship problems such as:
+
+      - Communication difficulties due to the cognitive or emotional effects of these conditions on personal relations
+      - Emotional distance, disconnection, or personality changes that strain personal relationships
+      - Stress or frustration from caregiving responsibilities related to the condition
+      - Intimacy issues resulting from the physical or psychological effects of the condition
+      - Misunderstandings or arguments resulting from symptoms like memory loss, anxiety, or mood swings that can affect personal relationships
+      - Resentment or frustration from either partner because of the challenges posed by the condition
+      - Difficulty maintaining friendships or social connections due to the neurological disease
+
+      Respond with 'Yes' if the content explicitly mentions or strongly implies relationship challenges directly related to the neurological diseases listed above. Respond with 'No' if it does not, or if the diseases are mentioned without clear reference to relationship issues."""},
+
+          {"role": "user", "content": f"""Analyze the following text and determine if it contains any mention of personal relationship challenges specifically due to neurological diseases as described above.
+
+      Text: "{question}"
+
+      Provide your answer in one word only:"""}
+      ]
+
+
+
+
+
+    try:
+        response = client.chat.completions.create(
+            model="benchChat",  # Use the appropriate model name
+            messages=messages,  # Pass the messages instead of prompt
+            max_tokens=5,
+            temperature=0  # Lower temperature for deterministic output
+        )
+
+        # Check if response and content exist before accessing
+        if response and response.choices[0].message and response.choices[0].message.content:
+            answer = response.choices[0].message.content.strip() # Extract the answer from the message content
+            return answer
+        else:
+          print(f"Empty response for question: {question}")
+          return "None"
+
+        answer = response.choices[0].message.content.strip()  # Extract the answer from the message content
+        return answer
+
+    except openai.BadRequestError as e:
+        # Print the error message and the problematic question
+        print(f"Error: {e}")
+        print(f"Problematic question: {question}")
+        # Return 'Unknown' or handle the error in another way
+        return "Problematic"
+    
+# Discrimination detection
+def social_emotional_challenges(question):
+    # Construct the messages for the chat completion
+    messages = [
+    {"role": "system", "content": """You are an AI assistant specialized in analyzing text for discriminatory content related to neurodiverse disabilities and mental health conditions. Your task is to determine if a given text contains any form of discrimination specifically targeting individuals with neurodiverse or mental health conditions, which may include but is not limited to:
+
+      1. Discrimination based on neurodiverse conditions such as autism spectrum disorders (ASD), ADHD, dyslexia, dysgraphia, or Tourette syndrome
+      2. Discrimination based on mental health conditions such as:
+          - Bipolar disorder
+          - Anxiety disorders
+          - Borderline personality disorder (BPD)
+          - Depression
+          - Obsessive-compulsive disorder (OCD)
+          - Post-traumatic stress disorder (PTSD)
+          - Schizophrenia or other psychotic disorders
+      3. Any form of biased treatment, exclusion, derogatory statements, or negative assumptions aimed at individuals based on their neurodiverse or mental health conditions
+      4. Stereotyping, belittling, or making harmful assumptions about someone's abilities, intelligence, behavior, or worth based on these conditions
+
+      Discrimination may include unfair treatment, derogatory comments, exclusion, stereotyping, or assumptions about capability or character due to neurodiversity or mental health conditions.
+
+      Respond with 'Yes' if the content contains any form of discrimination based on neurodiverse disabilities or mental health conditions, and 'No' if it does not."""},
+
+          {"role": "user", "content": f"""Analyze the following text and determine if it contains any form of discrimination based on neurodiverse disabilities or mental health conditions as described above.
+
+      Text: "{question}"
+
+      Provide your answer in one word only:"""}
+      ]
+
+
+
+    try:
+        response = client.chat.completions.create(
+            model="benchChat",  # Use the appropriate model name
+            messages=messages,  # Pass the messages instead of prompt
+            max_tokens=5,
+            temperature=0  # Lower temperature for deterministic output
+        )
+
+        # Check if response and content exist before accessing
+        if response and response.choices[0].message and response.choices[0].message.content:
+            answer = response.choices[0].message.content.strip() # Extract the answer from the message content
+            return answer
+        else:
+          print(f"Empty response for question: {question}")
+          return "None"
+
+        answer = response.choices[0].message.content.strip()  # Extract the answer from the message content
+        return answer
+
+    except openai.BadRequestError as e:
+        # Print the error message and the problematic question
+        print(f"Error: {e}")
+        print(f"Problematic question: {question}")
+        # Return 'Unknown' or handle the error in another way
+        return "Problematic"
+
 #Loading data based on which LLM is going to answer:    
-questions = df['Content']
+# questions = df['Content']
 
-print("***Prompting Starts***")
-results = {question: medicine_related_content(question) for question in questions}
+# *****************************************
+# print("***Prompting Starts***")
+# # Apply the extract_hashtags function to each post in the DataFrame
+# df['diseases'] = df['Content'].apply(related_diseases)
+# print("***Prompting Ends***")
+
+# print("***Prompting Starts for medical_advice***")
+# # Apply the extract_hashtags function to each post in the DataFrame
+# df['medical_advice'] = df['Content'].apply(medical_advice)
+# print("***Prompting Ends***")
+# df.to_csv(path, index=False)
+
+# print("***Prompting Starts for topic_identification***")
+# # Apply the extract_hashtags function to each post in the DataFrame
+# df['topic'] = df['Content'].apply(which_topic)
+# print("***Prompting Ends***")
+# df.to_csv(path, index=False)
+
+# print("***Prompting Starts for related_to_workplace***")
+# # Apply the extract_hashtags function to each post in the DataFrame
+# df['workplace_related'] = df['Content'].apply(is_related_to_workplace)
+# print("***Prompting Ends***")
+# df.to_csv(path, index=False)
+
+# print("***Prompting Starts for medical_medicine_related***")
+# # Apply the extract_hashtags function to each post in the DataFrame
+# df['medical_medicine_related'] = df['Content'].apply(medical_medicine_related)
+# print("***Prompting Ends***")
+# df.to_csv(path, index=False)
+
+# print("***Prompting Starts for discrimination***")
+# # Apply the extract_hashtags function to each post in the DataFrame
+# df['discrimination'] = df['Content'].apply(discrimination)
+# print("***Prompting Ends***")
+# df.to_csv(path, index=False)
+
+# print("***Prompting Starts for medicine_related_content***")
+# # Apply the extract_hashtags function to each post in the DataFrame
+# df['medicine_related'] = df['Content'].apply(medicine_related_content)
+# print("***Prompting Ends***")
+# df.to_csv(path, index=False)
+
+# print("***Prompting Starts for relational_challenges***")
+# # Apply the extract_hashtags function to each post in the DataFrame
+# df['relational_challenges'] = df['Content'].apply(relational_challenges)
+# print("***Prompting Ends***")
+# df.to_csv(path, index=False)
+
+print("***Prompting Starts for social_emotional_challenges***")
+# Apply the extract_hashtags function to each post in the DataFrame
+df['relational_challenges'] = df['Content'].apply(social_emotional_challenges)
 print("***Prompting Ends***")
+df.to_csv(path, index=False)
 
 
-l = []
-text = []
-for question, answer in results.items():
-    l.append(answer)
-    text.append(question)
-    # print(f"Question: {question}\nAnswer: {answer}\n")
+# print("***Prompting Starts***")
+# results = {question: discrimination(question) for question in questions}
+# print("***Prompting Ends***")
 
-print(len(l))
-print(len(text))
 
-merged_list = list(zip(text, l))
+# l = []
+# text = []
+# for question, answer in results.items():
+#     l.append(answer)
+#     text.append(question)
+#     # print(f"Question: {question}\nAnswer: {answer}\n")
 
-df = pd.DataFrame(merged_list, columns=['Content', 'medicine_related'])
-print(df)
+# print(len(l))
+# print(len(text))
 
-merged_df = pd.merge(df_org, df, on='Content', how='right')
-print(merged_df)
+# merged_list = list(zip(text, l))
 
-merged_df.to_csv(path, index=False)
+# df = pd.DataFrame(merged_list, columns=['Content', 'discrimination'])
+# print(df)
+
+# merged_df = pd.merge(df_org, df, on='Content', how='right')
+# print(merged_df)
+
+# merged_df.to_csv(path, index=False)
