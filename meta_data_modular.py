@@ -539,67 +539,120 @@ def managing_diseases(question):
         print(f"Problematic question: {question}")
         # Return 'Problematic' or handle the error in another way
         return "Problematic"
+    
+# summarize content
+def summarize(question):
+    # Construct the messages for the chat completion
+    messages = [
+        {"role": "system", "content": """You are an AI assistant skilled in analyzing text to identify the main topic. Your task is to review the provided content and:
+
+        Identify the primary topic or theme discussed.
+
+        To determine the key topic, consider the following:
+        - Focus on the central idea or most frequently mentioned subject.
+        - Identify key issues, challenges, or solutions mentioned.
+        - Determine what is essential for understanding the overall message.
+
+        Your response should be concise and directly state the main topic"""},
+
+        {"role": "user", "content": f"""Review the following content and:
+        Identify the key topic or theme in a concise manner.
+
+        Text: "{question}"
+        
+        Provide your answer as concisely as possible."""}
+    ]
+
+    try:
+        response = client.chat.completions.create(
+            model="benchChat",  # Use the appropriate model name
+            messages=messages,  # Pass the messages instead of prompt
+            max_tokens=50,  # Increase the max_tokens to allow a longer response if needed
+            temperature=0  # Lower temperature for deterministic output
+        )
+
+        # Check if response and content exist before accessing
+        if response and response.choices[0].message and response.choices[0].message.content:
+            answer = response.choices[0].message.content.strip()  # Extract the answer from the message content
+            return answer
+        else:
+            print(f"Empty response for question: {question}")
+            return "None"
+
+    except openai.BadRequestError as e:
+        # Print the error message and the problematic question
+        print(f"Error: {e}")
+        print(f"Problematic question: {question}")
+        # Return 'Problematic' or handle the error in another way
+        return "Problematic"
+
 
 
 #Loading data based on which LLM is going to answer:    
 # questions = df['Content']
 
-# *****************************************
-print("***Prompting Starts***")
-# Apply the extract_hashtags function to each post in the DataFrame
-df['diseases'] = df['Content'].apply(related_diseases)
-print("***Prompting Ends***")
+## *****************************************
+#print("***Prompting Starts***")
+## Apply the extract_hashtags function to each post in the DataFrame
+#df['diseases'] = df['Content'].apply(related_diseases)
+#print("***Prompting Ends***")
 
-print("***Prompting Starts for medical_advice***")
-# Apply the extract_hashtags function to each post in the DataFrame
-df['medical_advice'] = df['Content'].apply(medical_advice)
-print("***Prompting Ends***")
-df.to_csv(path, index=False)
+#print("***Prompting Starts for medical_advice***")
+## Apply the extract_hashtags function to each post in the DataFrame
+#df['medical_advice'] = df['Content'].apply(medical_advice)
+#print("***Prompting Ends***")
+#df.to_csv(path, index=False)
 
-print("***Prompting Starts for topic_identification***")
-# Apply the extract_hashtags function to each post in the DataFrame
-df['topic'] = df['Content'].apply(which_topic)
-print("***Prompting Ends***")
-df.to_csv(path, index=False)
+#print("***Prompting Starts for topic_identification***")
+## Apply the extract_hashtags function to each post in the DataFrame
+#df['topic'] = df['Content'].apply(which_topic)
+#print("***Prompting Ends***")
+#df.to_csv(path, index=False)
 
-print("***Prompting Starts for related_to_workplace***")
-# Apply the extract_hashtags function to each post in the DataFrame
-df['workplace_related'] = df['Content'].apply(is_related_to_workplace)
-print("***Prompting Ends***")
-df.to_csv(path, index=False)
+#print("***Prompting Starts for related_to_workplace***")
+## Apply the extract_hashtags function to each post in the DataFrame
+#df['workplace_related'] = df['Content'].apply(is_related_to_workplace)
+#print("***Prompting Ends***")
+#df.to_csv(path, index=False)
 
-print("***Prompting Starts for medical_medicine_related***")
-# Apply the extract_hashtags function to each post in the DataFrame
-df['medical_medicine_related'] = df['Content'].apply(medical_medicine_related)
-print("***Prompting Ends***")
-df.to_csv(path, index=False)
+#print("***Prompting Starts for medical_medicine_related***")
+## Apply the extract_hashtags function to each post in the DataFrame
+#df['medical_medicine_related'] = df['Content'].apply(medical_medicine_related)
+#print("***Prompting Ends***")
+#df.to_csv(path, index=False)
 
-print("***Prompting Starts for discrimination***")
-# Apply the extract_hashtags function to each post in the DataFrame
-df['discrimination'] = df['Content'].apply(discrimination)
-print("***Prompting Ends***")
-df.to_csv(path, index=False)
+#print("***Prompting Starts for discrimination***")
+## Apply the extract_hashtags function to each post in the DataFrame
+#df['discrimination'] = df['Content'].apply(discrimination)
+#print("***Prompting Ends***")
+#df.to_csv(path, index=False)
 
-print("***Prompting Starts for medicine_related_content***")
-# Apply the extract_hashtags function to each post in the DataFrame
-df['medicine_related'] = df['Content'].apply(medicine_related_content)
-print("***Prompting Ends***")
-df.to_csv(path, index=False)
+#print("***Prompting Starts for medicine_related_content***")
+## Apply the extract_hashtags function to each post in the DataFrame
+#df['medicine_related'] = df['Content'].apply(medicine_related_content)
+#print("***Prompting Ends***")
+#df.to_csv(path, index=False)
 
-print("***Prompting Starts for relational_challenges***")
-# Apply the extract_hashtags function to each post in the DataFrame
-df['relational_challenges'] = df['Content'].apply(relational_challenges)
-print("***Prompting Ends***")
-df.to_csv(path, index=False)
+#print("***Prompting Starts for relational_challenges***")
+## Apply the extract_hashtags function to each post in the DataFrame
+#df['relational_challenges'] = df['Content'].apply(relational_challenges)
+#print("***Prompting Ends***")
+#df.to_csv(path, index=False)
 
-print("***Prompting Starts for social_emotional_challenges***")
-# Apply the extract_hashtags function to each post in the DataFrame
-df['social_emotional_challenges'] = df['Content'].apply(social_emotional_challenges)
-print("***Prompting Ends***")
-df.to_csv(path, index=False)
+#print("***Prompting Starts for social_emotional_challenges***")
+## Apply the extract_hashtags function to each post in the DataFrame
+#df['social_emotional_challenges'] = df['Content'].apply(social_emotional_challenges)
+#print("***Prompting Ends***")
+#df.to_csv(path, index=False)
 
-print("***Prompting Starts for managing_diseases***")
+#print("***Prompting Starts for managing_diseases***")
+## Apply the extract_hashtags function to each post in the DataFrame
+#df['managing_diseases'] = df['Content'].apply(managing_diseases)
+#print("***Prompting Ends***")
+#df.to_csv(path, index=False)
+
+print("***Prompting Starts for Summarize***")
 # Apply the extract_hashtags function to each post in the DataFrame
-df['managing_diseases'] = df['Content'].apply(managing_diseases)
+df['summarize'] = df['Content'].apply(summarize)
 print("***Prompting Ends***")
 df.to_csv(path, index=False)
