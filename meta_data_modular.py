@@ -484,39 +484,7 @@ def social_emotional_challenges(question):
 # Managing_diseases
 def managing_diseases(question):
     # Construct the messages for the chat completion
-    messages = [
-        {"role": "system", "content": """You are an AI assistant specialized in analyzing text for information related to managing neurological diseases. Your task is to determine if the given text discusses or implies any methods, strategies, or advice for managing neurological conditions, including but not limited to:
-
-        1. Bipolar disorder
-        2. Anxiety disorders
-        3. Borderline personality disorder (BPD)
-        4. Depression
-        5. Obsessive-compulsive disorder (OCD)
-        6. Post-traumatic stress disorder (PTSD)
-        7. ADHD
-        8. Autism spectrum disorders
-        9. Schizophrenia or other psychotic disorders
-
-        Focus on identifying management strategies such as:
-
-        - Medication usage, dosage, or adjustments to treat symptoms
-        - Therapy or counseling options (e.g., cognitive-behavioral therapy, talk therapy)
-        - Coping mechanisms or techniques to manage symptoms in daily life
-        - Lifestyle changes (e.g., diet, exercise, sleep habits) that aid in managing the condition
-        - Mindfulness, meditation, or stress-relief techniques used for symptom control
-        - Support groups, community programs, or peer support for those with these conditions
-        - Medical advice on managing side effects of medications or treatments
-        - Any strategies aimed at improving mental health or reducing the impact of symptoms
-
-        Respond with 'Yes' if the content explicitly mentions or strongly implies management strategies or advice related to the neurological diseases listed above. Respond with 'No' if it does not, or if the diseases are mentioned without specific information about management."""},
-
-        {"role": "user", "content": f"""Analyze the following text and determine if it contains any mention of management strategies for neurological diseases as described above.
-
-        Text: "{question}"
-
-        Provide your answer in 'Yes' or 'No' one word only:"""}
-    ]
-
+    c
     try:
         response = client.chat.completions.create(
             model="benchChat",  # Use the appropriate model name
